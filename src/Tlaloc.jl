@@ -9,7 +9,7 @@ type Page
   args::Dict # Arguments sent by Julia that need to be added into the body
 
   #Constructor
-  function Page(template::ASCIIString,view::ASCIIString,args::Dict)
+  function Page(view::ASCIIString,args::Dict)
     new(view,args)
   end
 
