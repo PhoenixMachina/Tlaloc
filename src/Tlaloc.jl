@@ -2,8 +2,8 @@ module Tlaloc
 
 export Page,render,addArg,setViewDir,setTemplateDir
 
-global viewDir
-global templateDir
+global viewDir = ""
+global templateDir = ""
 
 keywords = ["extends"] #We'll later add for, endfor, etc...
 
