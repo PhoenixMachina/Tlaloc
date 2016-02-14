@@ -2,6 +2,9 @@ module Tlaloc
 
 export Page, display,addArg,setViewDir,setTemplateDir
 
+global viewDir
+global templateDir
+
 #Type Page
 type Page
   template::ASCIIString # Template used for page (contains header & footer)
@@ -17,11 +20,11 @@ end
 
 #Tools associated with the Page type
 function setViewDir(viewDir::ASCIIString)
-  global viewDir = viewDir
+  viewDir = viewDir
 end
 
 function setTemplateDir(templateDir::ASCIIString)
-  global templateDir = templateDir
+  templateDir = templateDir
 end
 
 # Adds arguments to page
