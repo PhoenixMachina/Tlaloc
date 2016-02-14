@@ -1,6 +1,6 @@
 module Tlaloc
 
-export Page, getParsedContent
+export Page, display,addArg,setViewDir,setTemplateDir
 
 #Type Page
 type Page
@@ -10,15 +10,19 @@ type Page
 
   #Constructor
   function Page(template::ASCIIString,view::ASCIIString,args::Dict)
-    template = string( "templates/",template)
-    view = string("views/", view)
-    new(template,view,args)
+    new(view,args)
   end
 
 end
 
 #Tools associated with the Page type
+function setViewDir(viewDir::ASCIIString)
+  global viewDir = viewDir
+end
 
+function setTemplateDir(templateDir::ASCIIString)
+  global templateDir = templateDir
+end
 
 # Adds arguments to page
 function addArg(page::Page,name::ASCIIString,value::ASCIIString)
@@ -45,20 +49,9 @@ function parseView(page::Page)
   return response
 end
 
-# Gets content
-function getContent(page::Page)
-  bodyContent = open(readall,string(HOME_URL,page.view))
-  if page.template == "templates/"
-    return bodyContent
-  end
-  templateContent = open(readall,string(HOME_URL,page.template))
-  bodyMarker = match(r"<body>",templateContent)
-  content = string(templateContent[1:bodyMarker.offset+6],bodyContent,templateContent[bodyMarker.offset + 6 : end])
-  return content
-end
 
 # Gets final content
-function getParsedContent(page::Page)
+function display(page::Page)
   return parseView(page)
 end
 
