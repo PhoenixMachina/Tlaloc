@@ -1,6 +1,6 @@
 module Tlaloc
 
-export Page
+export Page, getParsedContent
 
 #Type Page
 type Page
