@@ -1,21 +1,18 @@
 module Tlaloc
 
-export Page, display,addArg,setViewDir,setTemplateDir
+export Page,render,addArg,setViewDir,setTemplateDir
 
 global viewDir
 global templateDir
 
 #Type Page
 type Page
-  template::ASCIIString # Template used for page (contains header & footer)
   view::ASCIIString # Contains body
   args::Dict # Arguments sent by Julia that need to be added into the body
-
   #Constructor
   function Page(view::ASCIIString,args::Dict)
     new(view,args)
   end
-
 end
 
 #Tools associated with the Page type
@@ -54,7 +51,7 @@ end
 
 
 # Gets final content
-function display(page::Page)
+function render(page::Page)
   return parseView(page)
 end
 
