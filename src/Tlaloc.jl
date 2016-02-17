@@ -1,9 +1,6 @@
 module Tlaloc
 
-export Page,render,addArg,setViewDir,setTemplateDir,viewDir,templateDir
-
-global viewDir = "/"
-global templateDir = "/"
+export Page,render,addArg
 
 keywords = ["extends"] #We'll later add for, endfor, etc...
 
@@ -24,7 +21,7 @@ end
 
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
-  response = open(readall,string(viewDir,page.view))
+  response = open(readall,(page.view))
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
   for match in eachmatch(r"\$\{([a-zA-Z0-9_]+)\}",content)
     hasKeyword = false
