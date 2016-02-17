@@ -23,7 +23,7 @@ end
 function parseView(page::Page)
   response = open(readall,(page.view))
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for match in eachmatch(r"\$\{([a-zA-Z0-9_]+)\}",content)
+  for match in eachmatch(r"\$\{([a-zA-Z0-9_]+)\}",response)
     hasKeyword = false
     if ismatch(r" ",match.match)
       # If there's a space, they probably are keywords, so we'll try to find them
