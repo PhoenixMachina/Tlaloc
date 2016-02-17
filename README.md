@@ -1,14 +1,31 @@
 # Tlaloc
 A Julia Template Engine
 
-The template engine isn't quite functional right now, but here's how it works :
+How to add it to your project :
 
-To add it, type
+You first need to clone the repo, like this :
 ```
 Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
 ```
 
-In your code, you need to have
+In your code, you need to have wherever you want to use it :
 ```
 using Tlaloc
+```
+
+You now need to create a "Page" object. The constructor has two parameters, a string with the url of the view, and a dictionnary with variables you want to add in the view.
+```
+mypage = Page("C:/julia/views/login.html",Dict())
+```
+
+Note that you'll be able to add arguments later, using
+```
+addArg(mypage,name,value)
+```
+
+Here's a look at what your view file could look like :
+```
+${ extends "header.html" }
+Hey to you my friend ${username}! What's up?
+${ extends "footer.html" }
 ```
