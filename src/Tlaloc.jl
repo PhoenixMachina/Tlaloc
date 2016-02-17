@@ -2,7 +2,7 @@ module Tlaloc
 
 export Page,render,addArg
 
-keywords = ["extends"] #We'll later add for, endfor, etc...
+keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 
 #Type Page
 type Page
@@ -23,20 +23,17 @@ end
 function parseView(page::Page)
   response = open(readall,(page.view))
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for match in eachmatch(r"\$\{([a-zA-Z0-9_]+)\}",response)
-    hasKeyword = false
-    if ismatch(r" ",match.match)
-      # If there's a space, they probably are keywords, so we'll try to find them
-      for keyword in keywords
-        if keyword == (match.match)[1:(match(r" ",match.match).offset)]
-          hasKeyword = true
-          break
-        end
+  for match in eachmatch(r"\$\{([a-zA-Z0-9_ ]+)\}",response)
+
+    for keyword in keywords
+      reg_string =  "$(keyword)"
+      reg = Regex(reg_string)
+      if ismatch(reg,match.match)
+        println("Found keyword !")
       end
     end
-    if hasKeyword
-      #Then we'll treat it
-    elseif isdefined(symbol((match.match)[3:end-1]))
+
+    if isdefined(symbol((match.match)[3:end-1]))
       var = @eval ($(symbol((match.match)[3:end-1])))
       response = string(response[1:(match.offset)-1 + difference],var,response[((match.offset)+difference+(length(match.match))):end] )
       difference = difference + length(var) - length(match.match)
