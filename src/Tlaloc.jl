@@ -1,9 +1,9 @@
 module Tlaloc
 
-export Page,render,addArg,setViewDir,setTemplateDir
+export Page,render,addArg,setViewDir,setTemplateDir,viewDir,templateDir
 
-global viewDir = ""
-global templateDir = ""
+global viewDir = "/"
+global templateDir = "/"
 
 keywords = ["extends"] #We'll later add for, endfor, etc...
 
@@ -15,15 +15,6 @@ type Page
   function Page(view::ASCIIString,args::Dict)
     new(view,args)
   end
-end
-
-#Tools associated with the Page type
-function setViewDir(viewDir::ASCIIString)
-  viewDir = viewDir
-end
-
-function setTemplateDir(templateDir::ASCIIString)
-  templateDir = templateDir
 end
 
 # Adds arguments to page
