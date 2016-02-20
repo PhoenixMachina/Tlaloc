@@ -1,4 +1,5 @@
 # Tlaloc
+[![Build Status](https://travis-ci.org/PhoenixMachina/Tlaloc.svg?branch=master)](https://travis-ci.org/PhoenixMachina/Tlaloc)
 A Julia Template Engine
 
 How to add it to your project :

@@ -1,28 +1,36 @@
-module TlalocTemplate
+module Tlaloc
 
-export Tlaloc, Page,render,addArg
+using ConfParser
+
+export TlalocEngine, Page,render,addArg
 
 keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 
 #Type Tlaloc
-type Tlaloc
-  path::ASCIIString # path to view
+type TlalocEngine
+  viewPath::ASCIIString # path to views
+  TemplatePath::ASCIIString # path to templates
+  RessourcePath::ASCIIString # path to ressources
   #Constructor
-  function Tlaloc(path::ASCIIString)
-    if path[end] != '/'
-      path = "$path/"
+  function TlalocEngine(path::ASCIIString="")
+    if path != ""
+      conf = ConfParse(path)
+      parse_conf!(conf)
+      viewPath = retrieve(conf, "viewPath")
+      TemplatePath = retrieve(conf, "TemplatePath")
+      RessourcePath = retrieve(conf, "RessourcePath")
     end
-    new(path)
+    new(viewPath, TemplatePath, RessourcePath)
   end
 end
 
 #Type Page
 type Page
-  tlaloc::Tlaloc # Instance of Tlaloc
+  tlaloc::TlalocEngine # Instance of Tlaloc
   view::ASCIIString # Contains body
   args::Dict # Arguments sent by Julia that need to be added into the body
   #Constructor
-  function Page(tlaloc::Tlaloc, view::ASCIIString, args::Dict)
+  function Page(tlaloc::TlalocEngine, view::ASCIIString, args::Dict)
     new(tlaloc,view,args)
   end
 end
@@ -34,7 +42,7 @@ end
 
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
-  response = open(readall, page.tlaloc.path * page.view)
+  response = open(readall, page.tlaloc.viewPath * page.view)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
   for match in eachmatch(r"\$\{([a-zA-Z0-9_ ]+)\}",response)
 
