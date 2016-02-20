@@ -18,9 +18,9 @@ You need to create a tlaloc object and set the path to your views folder :
 tlaloc = Tlaloc("path/to/views")
 ```
 
-You now need to create a "Page" object. The constructor has three parameters, a tlaloc object, a string with the url of the view and a dictionnary with variables you want to add in the view.
+You now need to create a "Page" object. The constructor has three parameters, a tlaloc object, a string with the name of the view and a dictionnary with variables you want to add in the view.
 ```
-mypage = Page(tlaloc, "C:/julia/views/login.html", Dict())
+mypage = Page(tlaloc, "login.html", Dict())
 ```
 
 Note that you'll be able to add arguments later, using
