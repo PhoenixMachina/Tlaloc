@@ -1,27 +1,42 @@
-module Tlaloc
+module TlalocTemplate
 
-export Page,render,addArg
+export Tlaloc, Page,render,addArg
 
 keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 
+#Type Tlaloc
+type Tlaloc
+  path::ASCIIString # path to view
+  #Constructor
+  function Tlaloc(path::ASCIIString)
+    if path[end] != '/'
+      path = "$path/"
+    end
+    new(path)
+  end
+end
+
 #Type Page
 type Page
+  tlaloc::Tlaloc # Instance of Tlaloc
   view::ASCIIString # Contains body
   args::Dict # Arguments sent by Julia that need to be added into the body
   #Constructor
-  function Page(view::ASCIIString,args::Dict)
-    new(view,args)
+  function Page(tlaloc::Tlaloc, view::ASCIIString, args::Dict)
+    new(tlaloc,view,args)
   end
 end
 
 # Adds arguments to page
-function addArg(page::Page,name::ASCIIString,value::ASCIIString)
+function addArg(page::Page, name::ASCIIString, value::ASCIIString)
   push!(page.args,(name=>value))
 end
 
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
-  response = open(readall,(page.view))
+  print(page.tlaloc.path)
+  print(page.view)
+  response = open(readall, page.tlaloc.path * page.view)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
   for match in eachmatch(r"\$\{([a-zA-Z0-9_ ]+)\}",response)
 
