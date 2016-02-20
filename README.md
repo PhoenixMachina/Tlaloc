@@ -10,12 +10,17 @@ Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
 
 In your code, you need to have wherever you want to use it :
 ```
-using Tlaloc
+using TlalocTemplate
 ```
 
-You now need to create a "Page" object. The constructor has two parameters, a string with the url of the view, and a dictionnary with variables you want to add in the view.
+You need to create a tlaloc object and set the path to your views folder :
 ```
-mypage = Page("C:/julia/views/login.html",Dict())
+tlaloc = Tlaloc("path/to/views")
+```
+
+You now need to create a "Page" object. The constructor has three parameters, a tlaloc object, a string with the url of the view and a dictionnary with variables you want to add in the view.
+```
+mypage = Page(tlaloc, "C:/julia/views/login.html", Dict())
 ```
 
 Note that you'll be able to add arguments later, using
