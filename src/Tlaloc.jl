@@ -34,8 +34,6 @@ end
 
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
-  print(page.tlaloc.path)
-  print(page.view)
   response = open(readall, page.tlaloc.path * page.view)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
   for match in eachmatch(r"\$\{([a-zA-Z0-9_ ]+)\}",response)
