@@ -10,17 +10,17 @@ keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 type TlalocEngine
   viewPath::ASCIIString # path to views
   TemplatePath::ASCIIString # path to templates
-  RessourcePath::ASCIIString # path to ressources
+  ResourcePath::ASCIIString # path to resources
   #Constructor
   function TlalocEngine(path::ASCIIString="")
     if path != ""
       conf = ConfParse(path)
       parse_conf!(conf)
-      viewPath = retrieve(conf, "viewPath")
-      TemplatePath = retrieve(conf, "TemplatePath")
-      RessourcePath = retrieve(conf, "RessourcePath")
+      viewPath = retrieve(conf, "default", "viewPath")
+      TemplatePath = retrieve(conf, "default", "TemplatePath")
+      ResourcePath = retrieve(conf, "default", "ResourcePath")
     end
-    new(viewPath, TemplatePath, RessourcePath)
+    new(viewPath, TemplatePath, ResourcePath)
   end
 end
 
