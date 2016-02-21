@@ -1,12 +1,16 @@
 # Tlaloc
+
 [![Build Status](https://travis-ci.org/PhoenixMachina/Tlaloc.svg?branch=master)](https://travis-ci.org/PhoenixMachina/Tlaloc)
+[![Licence MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 A Julia Template Engine
 
 How to add it to your project :
 
-You first need to clone the repo, like this :
+You first need to clone the repo and its dependecy, like this :
 ```
 Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
+Pkg.clone("https://github.com/PhoenixMachina/ConfParser.jl")
 ```
 
 In your code, you need to have wherever you want to use it :
