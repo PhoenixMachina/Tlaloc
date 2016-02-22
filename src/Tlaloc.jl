@@ -50,7 +50,9 @@ function parseView(page::Page)
       reg_string =  "$(keyword)"
       reg = Regex(reg_string)
       if ismatch(reg,match.match)
-        println("Found keyword !")
+        if keyword == "extends"
+          # Soon
+        end
       end
     end
 
