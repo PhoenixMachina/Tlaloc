@@ -20,4 +20,4 @@ addArg(aPage,"name","aValue")
 
 #Testing view
 aPage.tlaloc.viewPath = string(dirname(Base.source_path()),"/")
-@test render(aPage) == "\${extends} \${something} Hello aValue, great to meet you!\r\n"
+@test render(aPage) == "\${extends} \${something} Hello aValue, great to meet you!\n"
