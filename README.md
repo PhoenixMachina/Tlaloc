@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/PhoenixMachina/Tlaloc.svg?branch=master)](https://travis-ci.org/PhoenixMachina/Tlaloc)
 [![Licence MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![codecov.io](https://codecov.io/github/PhoenixMachina/Tlaloc/coverage.svg?branch=master)](https://codecov.io/github/PhoenixMachina/Tlaloc?branch=master)
 
 A Julia Template Engine
 
