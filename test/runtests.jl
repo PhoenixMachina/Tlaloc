@@ -14,6 +14,10 @@ aPage = Page(engine,"apage.html",Dict())
 @test aPage.view == "apage.html"
 
 #Trying to add args
-addArg(aPage,"anArgument","aValue")
-@test haskey(aPage.args,"anArgument")
-@test (aPage.args)["anArgument"] == "aValue"
+addArg(aPage,"name","aValue")
+@test haskey(aPage.args,"name")
+@test (aPage.args)["name"] == "aValue"
+
+#Testing view
+aPage.tlaloc.viewPath = string(dirname(Base.source_path()),"/")
+@test render(aPage) == "\${extends} \${something} Hello aValue, great to meet you!\r\n"
