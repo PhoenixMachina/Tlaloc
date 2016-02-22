@@ -56,11 +56,7 @@ function parseView(page::Page)
       end
     end
 
-    if isdefined(symbol((match.match)[3:end-1]))
-      var = @eval ($(symbol((match.match)[3:end-1])))
-      response = string(response[1:(match.offset)-1 + difference],var,response[((match.offset)+difference+(length(match.match))):end] )
-      difference = difference + length(var) - length(match.match)
-    elseif haskey(page.args,(match.match)[3:end-1])
+    if haskey(page.args,(match.match)[3:end-1])
       var = (page.args)[(match.match)[3:end-1]]
       response = string(response[1:(match.offset)-1 + difference],var,response[((match.offset)+difference+(length(match.match))):end] )
       difference = difference + length(var) - length(match.match)
