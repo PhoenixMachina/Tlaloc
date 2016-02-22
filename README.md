@@ -10,8 +10,8 @@ How to add it to your project :
 
 You first need to clone the repo and its dependecy, like this :
 ```
-Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
 Pkg.clone("https://github.com/PhoenixMachina/ConfParser.jl")
+Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
 ```
 
 In your code, you need to have wherever you want to use it :
@@ -19,10 +19,18 @@ In your code, you need to have wherever you want to use it :
 using TlalocTemplate
 ```
 
-You need to create a tlaloc object and set the path to your views folder :
+You need to create a tlaloc object and set the path to your config file :
 ```
-tlaloc = Tlaloc("path/to/views")
+tlaloc = Tlaloc("path/to/conf.ini")
 ```
+
+Inside your conf.ini, you need to have :
+```
+viewPath=pathWithYourViews
+TemplatePath=pathWithYourTemplates
+ResourcePath=pathWithYourResources
+```
+By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder.
 
 You now need to create a "Page" object. The constructor has three parameters, a tlaloc object, a string with the name of the view and a dictionnary with variables you want to add in the view.
 ```
@@ -36,7 +44,5 @@ addArg(mypage,name,value)
 
 Here's a look at what your view file could look like :
 ```
-${ extends "header.html" }
 Hey to you my friend ${username}! What's up?
-${ extends "footer.html" }
 ```
