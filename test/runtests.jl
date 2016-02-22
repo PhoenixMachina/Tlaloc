@@ -15,5 +15,5 @@ aPage = Page(engine,"apage.html",Dict())
 
 #Trying to add args
 addArg(aPage,"anArgument","aValue")
-@test haskey(aPage,"anArgument")
+@test haskey(aPage.args,"anArgument")
 @test (aPage.args)["anArgument"] == "aValue"
