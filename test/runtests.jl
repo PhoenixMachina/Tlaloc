@@ -5,8 +5,8 @@ using Tlaloc
 engine = TlalocEngine(string(dirname(Base.source_path()),"/test_conf.ini"))
 @test typeof(engine) == TlalocEngine
 @test engine.viewPath == "thisIsTheViewPath"
-@test engine.TemplatePath == "thisIsTheTemplatePath"
-@test engine.ResourcePath == "thisIsTheResource"
+@test engine.templatePath == "thisIsTheTemplatePath"
+@test engine.resourcePath == "thisIsTheResource"
 
 #Testing Page constructor
 aPage = Page(engine,"apage.html",Dict())
