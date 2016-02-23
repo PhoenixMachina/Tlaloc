@@ -17,8 +17,8 @@ type TlalocEngine
       conf = ConfParse(path)
       parse_conf!(conf)
       viewPath = retrieve(conf, "default", "viewPath")
-      templatePath = retrieve(conf, "default", "TemplatePath")
-      resourcePath = retrieve(conf, "default", "ResourcePath")
+      templatePath = retrieve(conf, "default", "templatePath")
+      resourcePath = retrieve(conf, "default", "resourcePath")
     end
     new(viewPath, templatePath, resourcePath)
   end
@@ -44,16 +44,15 @@ end
 function parseView(page::Page)
   response = open(readall, page.tlaloc.viewPath * page.view)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for match in eachmatch(r"\$\{([a-zA-Z0-9_ ]+)\}",response)
-
+  for match in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",response)
     for keyword in keywords
       reg_string =  "$(keyword)"
       reg = Regex(reg_string)
       if ismatch(reg,match.match)
         if keyword == "extends"
           if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),match.match)
-            statement = match(Regex("extends \"([a-zA-Z0-9_ .]+)\""),match.match)
-            content = open(readall,page.tlaloc.templatePath * statement[9:end-1])
+            statement = match(Regex("extends \"([a-zA-Z0-9_. ]+)\""),match.match)
+            content = open(readall,page.tlaloc.templatePath * (statement.match)[9:end-1])
             response = string(response[1:(match.offset)-1 + difference],content,response[((match.offset)+difference+(length(match.match))):end] )
             difference = difference + length(length) - length(match.match)
           end
