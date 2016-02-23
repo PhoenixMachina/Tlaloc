@@ -9,18 +9,18 @@ keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 #Type Tlaloc
 type TlalocEngine
   viewPath::ASCIIString # path to views
-  TemplatePath::ASCIIString # path to templates
-  ResourcePath::ASCIIString # path to resources
+  templatePath::ASCIIString # path to templates
+  resourcePath::ASCIIString # path to resources
   #Constructor
   function TlalocEngine(path::ASCIIString="")
     if path != ""
       conf = ConfParse(path)
       parse_conf!(conf)
       viewPath = retrieve(conf, "default", "viewPath")
-      TemplatePath = retrieve(conf, "default", "TemplatePath")
-      ResourcePath = retrieve(conf, "default", "ResourcePath")
+      templatePath = retrieve(conf, "default", "TemplatePath")
+      resourcePath = retrieve(conf, "default", "ResourcePath")
     end
-    new(viewPath, TemplatePath, ResourcePath)
+    new(viewPath, templatePath, resourcePath)
   end
 end
 
@@ -51,7 +51,14 @@ function parseView(page::Page)
       reg = Regex(reg_string)
       if ismatch(reg,match.match)
         if keyword == "extends"
-          # Soon
+          if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),match.match)
+            statement = match(Regex("extends \"([a-zA-Z0-9_ .]+)\""),match.match)
+            content = open(readall,page.tlaloc.templatePath * statement[9:end-1])
+            response = string(response[1:(match.offset)-1 + difference],content,response[((match.offset)+difference+(length(match.match))):end] )
+            difference = difference + length(length) - length(match.match)
+          end
+        elseif  keyword == "addResource"
+          #Soon
         end
       end
     end
