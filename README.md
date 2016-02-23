@@ -21,7 +21,7 @@ using TlalocTemplate
 
 You need to create a tlaloc object and set the path to your config file :
 ```
-tlaloc = Tlaloc("path/to/conf.ini")
+tlaloc = TlalocEngine("path/to/conf.ini")
 ```
 
 Inside your conf.ini, you need to have :
