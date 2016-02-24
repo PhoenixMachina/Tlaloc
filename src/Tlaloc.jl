@@ -70,8 +70,8 @@ function recursiveKeywordProcessing(content,page)
         if keyword == "extends"
           if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),amatch.match)
             statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
-            content = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
-            tmpContent = string(content[1:(amatch.offset)-1 + difference],tmpContent,content[((amatch.offset)+difference+(length(amatch.match))):end] )
+            tmpContent = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
+            content = string(content[1:(amatch.offset)-1 + difference],tmpContent,content[((amatch.offset)+difference+(length(amatch.match))):end] )
             difference = difference + length(content) - length(amatch.match)
           end
         elseif keyword == "for"
