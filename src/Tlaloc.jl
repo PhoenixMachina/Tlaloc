@@ -72,7 +72,7 @@ function recursiveKeywordProcessing(content,page)
             statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
             tmpContent = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
             content = string(content[1:(amatch.offset)-1 + difference],tmpContent,content[((amatch.offset)+difference+(length(amatch.match))):end] )
-            difference = difference + length(content) - length(amatch.match)
+            difference = difference + length(tmpContent) - length(amatch.match)
           end
         elseif keyword == "for"
           recursiveKeywordProcessing(content[length(match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}").match):match(r"\${forend}".offset)],page)
