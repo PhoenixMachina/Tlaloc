@@ -82,7 +82,7 @@ function recursiveKeywordProcessing(content,page)
 
     if haskey(page.args,(amatch.match)[3:end-1])
       var = (page.args)[(amatch.match)[3:end-1]]
-      response = string(response[1:(amatch.offset)-1 + difference],var,response[((amatch.offset)+difference+(length(amatch.match))):end] )
+      content = string(content[1:(amatch.offset)-1 + difference],var,content[((amatch.offset)+difference+(length(amatch.match))):end] )
       difference = difference + length(var) - length(amatch.match)
     end
   end
