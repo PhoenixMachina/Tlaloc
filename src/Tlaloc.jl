@@ -55,17 +55,17 @@ end
 function parseView(page::Page)
   response = open(readall, page.tlaloc.viewPath * page.view)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for match in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",response)
+  for amatch in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",response)
     for keyword in keywords
       reg_string =  "$(keyword)"
       reg = Regex(reg_string)
-      if ismatch(reg,match.match)
+      if ismatch(reg,amatch.match)
         if keyword == "extends"
-          if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),match.match)
-            statement = match(Regex("extends \"([a-zA-Z0-9_. ]+)\""),match.match)
-            content = open(readall,page.tlaloc.templatePath * (statement.match)[9:end-1])
-            response = string(response[1:(match.offset)-1 + difference],content,response[((match.offset)+difference+(length(match.match))):end] )
-            difference = difference + length(length) - length(match.match)
+          if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),amatch.match)
+            statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
+            content = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
+            response = string(response[1:(amatch.offset)-1 + difference],content,response[((amatch.offset)+difference+(length(amatch.match))):end] )
+            difference = difference + length(content) - length(amatch.match)
           end
         elseif  keyword == "addResource"
           #Soon
@@ -73,10 +73,10 @@ function parseView(page::Page)
       end
     end
 
-    if haskey(page.args,(match.match)[3:end-1])
-      var = (page.args)[(match.match)[3:end-1]]
-      response = string(response[1:(match.offset)-1 + difference],var,response[((match.offset)+difference+(length(match.match))):end] )
-      difference = difference + length(var) - length(match.match)
+    if haskey(page.args,(amatch.match)[3:end-1])
+      var = (page.args)[(amatch.match)[3:end-1]]
+      response = string(response[1:(amatch.offset)-1 + difference],var,response[((amatch.offset)+difference+(length(amatch.match))):end] )
+      difference = difference + length(var) - length(amatch.match)
     end
   end
 

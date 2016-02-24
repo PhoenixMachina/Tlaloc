@@ -4,9 +4,9 @@ using Tlaloc
 # Testing constructor
 engine = TlalocEngine(string(dirname(Base.source_path()),"/test_conf.ini"))
 @test typeof(engine) == TlalocEngine
-@test engine.viewPath == "thisIsTheViewPath"
-@test engine.templatePath == "thisIsTheTemplatePath"
-@test engine.resourcePath == "thisIsTheResource"
+@test engine.viewPath == "thisIsTheViewPath/"
+@test engine.templatePath == "thisIsTheTemplatePath/"
+@test engine.resourcePath == "thisIsTheResource/"
 
 #Testing Page constructor
 aPage = Page(engine,"apage.html",Dict())
@@ -21,4 +21,4 @@ addArg(aPage,"name","aValue")
 #Testing view
 aPage.tlaloc.viewPath = string(dirname(Base.source_path()),"/")
 aPage.tlaloc.templatePath = string(dirname(Base.source_path()),"/")
-@test render(aPage) == "\${extends} \${something} Hello aValue, great to meet you!\n"
+@test render(aPage) == "Yop\n\nBest header ever\n \${something} Hello aValue, great to meet you!\n"
