@@ -17,7 +17,7 @@ In your code, you need to have wherever you want to use it :
 using TlalocTemplate
 ```
 
-You need to create a tlaloc object and set the path to your config file :
+You need to create a Tlaloc object and set the path to your config file :
 ```
 tlaloc = TlalocEngine("path/to/conf.ini")
 ```
@@ -25,8 +25,8 @@ tlaloc = TlalocEngine("path/to/conf.ini")
 Inside your conf.ini, you need to have :
 ```
 viewPath=pathWithYourViews
-TemplatePath=pathWithYourTemplates
-ResourcePath=pathWithYourResources
+templatePath=pathWithYourTemplates
+resourcePath=pathWithYourResources
 ```
 By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder.
 
@@ -42,5 +42,12 @@ addArg(mypage,name,value)
 
 Here's a look at what your view file could look like :
 ```
+${extends "header.html"}
 Hey to you my friend ${username}! What's up?
+```
+
+##Render
+Obviously you will want at some point to render what you've done. It's very easy :
+```
+render(mypage)
 ```
