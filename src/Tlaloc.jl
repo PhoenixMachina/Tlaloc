@@ -54,8 +54,15 @@ end
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
   response = open(readall, page.tlaloc.viewPath * page.view)
+
+  reponse = recursiveKeywordProcessing(response,page)
+
+  return response
+end
+
+function recursiveKeywordProcessing(content,page)
   difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for amatch in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",response)
+  for amatch in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content)
     for keyword in keywords
       reg_string =  "$(keyword)"
       reg = Regex(reg_string)
@@ -64,11 +71,11 @@ function parseView(page::Page)
           if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),amatch.match)
             statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
             content = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
-            response = string(response[1:(amatch.offset)-1 + difference],content,response[((amatch.offset)+difference+(length(amatch.match))):end] )
+            tmpContent = string(content[1:(amatch.offset)-1 + difference],tmpContent,content[((amatch.offset)+difference+(length(amatch.match))):end] )
             difference = difference + length(content) - length(amatch.match)
           end
-        elseif  keyword == "addResource"
-          #Soon
+        elseif keyword == "for"
+          recursiveKeywordProcessing(content[length(match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}").match):match(r"\${forend}".offset)],page)
         end
       end
     end
@@ -79,10 +86,7 @@ function parseView(page::Page)
       difference = difference + length(var) - length(amatch.match)
     end
   end
-
-  return response
 end
-
 
 # Gets final content
 function render(page::Page)
