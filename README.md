@@ -8,9 +8,7 @@ A Julia Template Engine
 
 How to add it to your project :
 
-You first need to clone the repo and its dependecy, like this :
 ```
-Pkg.clone("https://github.com/PhoenixMachina/ConfParser.jl")
 Pkg.clone("https://github.com/PhoenixMachina/Tlaloc")
 ```
 
