@@ -54,39 +54,65 @@ end
 # This function parses the view by adding the defined variables into the HTML
 function parseView(page::Page)
   response = open(readall, page.tlaloc.viewPath * page.view)
-
-  reponse = recursiveKeywordProcessing(response,page)
-
+  response = recursiveKeywordProcessing(response,page)
   return response
 end
 
 function recursiveKeywordProcessing(content,page)
-  difference = 0 # We need this because eachMatch collects all the match and then treats them, which means the data concerning indexes starting from the second match needs to be adjusted
-  for amatch in eachmatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content)
-    for keyword in keywords
+
+  while ismatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) # Searching for every match ${something} in the content
+    amatch = match(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) #Giving it a value
+println(amatch.match)
+    hasKeyword = false # No keywords are here at first, we'll need that later on to check if there's neither a keyword nor a variable, which means nothing good, in the match
+
+    for keyword in keywords #Looping through the keywords to check if they are present in the match
+
+      # Creating a regex search for that keyword
       reg_string =  "$(keyword)"
       reg = Regex(reg_string)
-      if ismatch(reg,amatch.match)
-        if keyword == "extends"
-          if ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),amatch.match)
-            statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
-            tmpContent = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
-            content = string(content[1:(amatch.offset)-1 + difference],tmpContent,content[((amatch.offset)+difference+(length(amatch.match))):end] )
-            difference = difference + length(tmpContent) - length(amatch.match)
+
+      if ismatch(reg,amatch.match) # Checking if there's a keyword
+
+        if keyword == "extends" && ismatch(Regex("extends \"([a-zA-Z0-9_. ]+)\""),amatch.match) # Checking if there's an extends keyword with the appropriate form
+          hasKeyword = true
+          statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
+
+          # Checking the file exists
+          if !isfile(page.tlaloc.templatePath * (statement.match)[2:end-1])
+            error("The file you are trying to add does not exist")
           end
-        elseif keyword == "for"
-          recursiveKeywordProcessing(content[length(match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}").match):match(r"\${forend}".offset)],page)
+
+          # Fetching the template and adding it to the content
+          tmpContent = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
+          content = string(content[1:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
         end
+
+      elseif keyword == "for" && ismatch(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content) && ismatch(r"\${forend}",content) # If it's a for loop with the appropriate form
+        hasKeyword = true
+
+        beginning = match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content)
+        beginIndex = beginning.offset+length(beginning.match)
+        ending = match(r"\${forend}",content)
+        endIndex = ending.offset - 1
+
+        content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
       end
+
     end
 
-    if haskey(page.args,(amatch.match)[3:end-1])
+    if haskey(page.args,(amatch.match)[3:end-1]) #If it's a argument passed down by the controller, add it
       var = (page.args)[(amatch.match)[3:end-1]]
-      content = string(content[1:(amatch.offset)-1 + difference],var,content[((amatch.offset)+difference+(length(amatch.match))):end] )
-      difference = difference + length(var) - length(amatch.match)
+      content = string(content[1:(amatch.offset)-1 ],var,content[((amatch.offset)+(length(amatch.match))):end] )
+    elseif !hasKeyword
+      content = string(content[1:(amatch.offset)-1 ],"",content[((amatch.offset)+(length(amatch.match))):end] )
     end
-  end
-end
+
+
+  end # Ends While
+
+  return content
+
+end # Ends function
 
 # Gets final content
 function render(page::Page)
