@@ -62,7 +62,7 @@ function recursiveKeywordProcessing(content,page)
 
   while ismatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) # Searching for every match ${something} in the content
     amatch = match(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) #Giving it a value
-println(amatch.match)
+
     hasKeyword = false # No keywords are here at first, we'll need that later on to check if there's neither a keyword nor a variable, which means nothing good, in the match
 
     for keyword in keywords #Looping through the keywords to check if they are present in the match
