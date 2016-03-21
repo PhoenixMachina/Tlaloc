@@ -83,7 +83,7 @@ function recursiveKeywordProcessing(content,page)
           end
 
           # Fetching the template and adding it to the content
-          tmpContent = open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1])
+          tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1]),page)
           content = string(content[1:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
         end
 
