@@ -20,13 +20,13 @@ type TlalocEngine
       templatePath = retrieve(conf, "default", "templatePath")
       resourcePath = retrieve(conf, "default", "resourcePath")
 
-      if((viewPath[end-1:end] != "/") && (viewPath[end-1:end] != "\\"))
+      if((viewPath[end] != "/") && (viewPath[end-1:end] != "\\"))
         viewPath = string(viewPath,"/")
       end
-      if((templatePath[end-1:end] != "/") && (templatePath[end-1:end] != "\\"))
+      if((templatePath[end] != "/") && (templatePath[end-1:end] != "\\"))
         templatePath = string(templatePath,"/")
       end
-      if((resourcePath[end-1:end] != "/") && (resourcePath[end-1:end] != "\\"))
+      if((resourcePath[end] != "/") && (resourcePath[end-1:end] != "\\"))
         resourcePath = string(resourcePath,"/")
       end
 
