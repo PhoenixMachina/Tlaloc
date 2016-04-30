@@ -107,7 +107,7 @@ function recursiveKeywordProcessing(content,page)
                   throw(ArgumentError("Unknown format"))
 
         # Checking the file exists
-        if !isfile(page.tlaloc.resourcePath * (statement.match)
+        if !isfile(page.tlaloc.resourcePath * (statement.match))
           error("The file you are trying to add does not exist")
         end
 
