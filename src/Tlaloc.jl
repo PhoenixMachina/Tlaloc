@@ -98,6 +98,32 @@ function recursiveKeywordProcessing(content,page)
         content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
       end
 
+    elseif keyword == "addResource" && ismatch(Regex("addResource \"([a-zA-Z0-9_. ]+)\""),amatch.match) # Checking if there's an addResource keyword with the appropriate form
+        hasKeyword = true
+        statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
+        format |= (statement.match)[end-2:end] == 'css' ? 'css' :
+                  (statement.match)[end-1:end] == 'js' ? 'js'   :
+                  throw(ArgumentError("Unknown format"))
+
+        # Checking the file exists
+        if !isfile(page.tlaloc.resourcePath * (statement.match)
+          error("The file you are trying to add does not exist")
+        end
+
+        # Add the resource file
+        tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.resourcePath * (statement.match)),page)
+
+        if format == "css"
+          tmpContent = string("<link rel=\"stylesheet\" type=\"text/css\" href=\"",tmpContent,"\" media=\"screen\" >")
+        elseif format == "js"
+          tmpContent = string("<script type=\"text/javascript\" src=\"",tmpContent,"\"></script>")
+        else
+          tmpContent = string("<link href=\"",tmpContent,"\">")
+        end
+
+        content = string(content[0:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
+      end
+
     end
 
     if haskey(page.args,(amatch.match)[3:end-1]) #If it's a argument passed down by the controller, add it
