@@ -5,6 +5,7 @@ using ConfParser
 export TlalocEngine, Page,render,addArg
 
 keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
+format = ""
 
 #Type Tlaloc
 type TlalocEngine
@@ -98,10 +99,11 @@ function recursiveKeywordProcessing(content,page)
         content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
 
       elseif keyword == "addResource" && ismatch(Regex("addResource \"([a-zA-Z0-9_. ]+)\""),amatch.match) # Checking if there's an addResource keyword with the appropriate form
+        format::UTF8String
         hasKeyword = true
         statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
-        format |= (statement.match)[end-2:end] == 'css' ? 'css' :
-                  (statement.match)[end-1:end] == 'js' ? 'js'   :
+        format = (statement.match)[end-2:end] == "css" ? "css" :
+                  (statement.match)[end-1:end] == "js" ? "js"   :
                   throw(ArgumentError("Unknown format"))
 
         # Checking the file exists
