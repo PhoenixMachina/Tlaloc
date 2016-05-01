@@ -101,7 +101,7 @@ function recursiveKeywordProcessing(content,page)
       elseif keyword == "addResource" && ismatch(Regex("addResource \"([a-zA-Z0-9_. ]+)\""),amatch.match) # Checking if there's an addResource keyword with the appropriate form
         format::UTF8String
         hasKeyword = true
-        statement = match(Regex("\"([a-zA-Z0-9_. ]+)\""),amatch.match)
+        statement = match(Regex("\"([a-zA-Z0-9_./ ]+)\""),amatch.match)
         format = (statement.match)[end-2:end] == "css" ? "css" :
                   (statement.match)[end-1:end] == "js" ? "js"   :
                   throw(ArgumentError("Unknown format"))
