@@ -98,10 +98,12 @@ function recursiveKeywordProcessing(content,page)
 
         content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
 
-      elseif keyword == "addResource" && ismatch(Regex("addResource \"([a-zA-Z0-9_. ]+)\""),amatch.match) # Checking if there's an addResource keyword with the appropriate form
+      elseif keyword == "addResource" && (ismatch(Regex("addResource \"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match) || ismatch(Regex("addResource \"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)\""),amatch.match)) # Checking if there's an addResource keyword with the appropriate form
         format::UTF8String
         hasKeyword = true
-        statement = match(Regex("\"([a-zA-Z0-9_./ ]+)\""),amatch.match)
+        statement = (ismatch(Regex("addResource \"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match)) ?
+                    match(Regex("\"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match) :
+                    match(Regex("\"((http:\/\/|https:\/\/|\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)\""),amatch.match)
         format = (statement.match)[end-2:end] == "css" ? "css" :
                   (statement.match)[end-1:end] == "js" ? "js"   :
                   throw(ArgumentError("Unknown format"))
