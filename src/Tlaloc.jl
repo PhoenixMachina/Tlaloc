@@ -4,7 +4,9 @@ using ConfParser
 
 export TlalocEngine, Page,render,addArg
 
-keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
+keywords = ["extends","for","endfor"] #Not all implemented yet
+functions = ["addResource"]
+
 format = ""
 
 #Type Tlaloc
@@ -86,46 +88,19 @@ function recursiveKeywordProcessing(content,page)
           # Fetching the template and adding it to the content
           tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1]),page)
           content = string(content[1:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
+
+        elseif keyword == "for" && ismatch(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content) && ismatch(r"\${forend}",content) # If it's a for loop with the appropriate form
+          hasKeyword = true
+
+          beginning = match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content)
+          beginIndex = beginning.offset+length(beginning.match)
+          ending = match(r"\${forend}",content)
+          endIndex = ending.offset - 1
+
+          content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
         end
 
-      elseif keyword == "for" && ismatch(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content) && ismatch(r"\${forend}",content) # If it's a for loop with the appropriate form
-        hasKeyword = true
-
-        beginning = match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content)
-        beginIndex = beginning.offset+length(beginning.match)
-        ending = match(r"\${forend}",content)
-        endIndex = ending.offset - 1
-
-        content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
-
-      elseif keyword == "addResource" && (ismatch(Regex("addResource \"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match) || ismatch(Regex("addResource \"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)\""),amatch.match)) # Checking if there's an addResource keyword with the appropriate form
-        format::UTF8String
-        hasKeyword = true
-        statement = (ismatch(Regex("addResource \"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match)) ?
-                    match(Regex("addResource \"(\/\/|\/)?([a-zA-Z0-9 .])\""),amatch.match) :
-                    match(Regex("addResource \"((http:\/\/|https:\/\/|\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)\""),amatch.match)
-        format = (statement.match)[end-2:end] == "css" ? "css" :
-                  (statement.match)[end-1:end] == "js" ? "js"   :
-                  throw(ArgumentError("Unknown format"))
-
-        # Checking the file exists
-        if !isfile(page.tlaloc.resourcePath * (statement.match))
-          error("The file you are trying to add does not exist")
-        end
-
-        # Add the resource file
-        tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.resourcePath * (statement.match)),page)
-
-        if format == "css"
-          tmpContent = string("<link rel=\"stylesheet\" type=\"text/css\" href=\"",tmpContent,"\" media=\"screen\" >")
-        elseif format == "js"
-          tmpContent = string("<script type=\"text/javascript\" src=\"",tmpContent,"\"></script>")
-        else
-          tmpContent = string("<link href=\"",tmpContent,"\">")
-        end
-
-        content = string(content[0:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
-      end
+      end # Ends for
 
     end
 
@@ -137,6 +112,61 @@ function recursiveKeywordProcessing(content,page)
     end
 
   end # Ends While
+
+  while ismatch(r"\b[^()]+\((.*)\)$",content) # Searching for every match ${something} in the content
+    amatch = match(r"\b[^()]+\((.*)\)$",content) #Giving it a value
+
+    hasFunction = false
+
+    for functionKey in functions #Looping through the keywords to check if they are present in the match
+
+      # Creating a regex search for that keyword
+      reg_string =  "$(functionKey)"
+      reg = Regex(reg_string)
+
+      if ismatch(reg,amatch.match) # Checking if there's a keyword
+
+        if functionKey == "addResource" && (ismatch(Regex("addResource\(\"([a-zA-Z0-9 ./]+)\"\)"),amatch.match) || ismatch(Regex("addResource\(\"((http://|https://)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(/([a-zA-Z-_/\.0-9#:?=&;,]*)?)?)\"\)"),amatch.match)) # Checking if there's an addResource keyword with the appropriate form
+          format::UTF8String
+          hasFunction = true
+          statement = (ismatch(Regex("addResource\(\"([a-zA-Z0-9 ./]+)\"\)"),amatch.match)) ?
+                      match(Regex("addResource\(\"([a-zA-Z0-9 ./]+)\"\)"),amatch.match) :
+                      match(Regex("addResource\(\"((http:\/\/|https:\/\/|\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)\""),amatch.match)
+          format =  (statement.match)[end-2:end] == "css" ? "css" :
+                    (statement.match)[end-1:end] == "js" ? "js"   :
+                    throw(ArgumentError("Unknown format"))
+
+          # Checking the file exists
+          if !isfile(page.tlaloc.resourcePath * (statement.match))
+            error("The file you are trying to add does not exist")
+          end
+
+          # Add the resource file
+          tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.resourcePath * (statement.match)),page)
+
+          if format == "css"
+            tmpContent = string("<link rel=\"stylesheet\" type=\"text/css\" href=\"",tmpContent,"\" media=\"screen\" >")
+          elseif format == "js"
+            tmpContent = string("<script type=\"text/javascript\" src=\"",tmpContent,"\"></script>")
+          else
+            tmpContent = string("<link href=\"",tmpContent,"\">")
+          end
+
+          content = string(content[0:(amatch.offset)],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
+        end
+
+      end
+
+      if haskey(page.args,(amatch.match)[3:end-1]) #If it's a argument passed down by the controller, add it
+        var = (page.args)[(amatch.match)[3:end-1]]
+        content = string(content[1:(amatch.offset)-1 ],var,content[((amatch.offset)+(length(amatch.match))):end] )
+      elseif !hasFunction
+        content = string(content[1:(amatch.offset)-1 ],"",content[((amatch.offset)+(length(amatch.match))):end] )
+      end
+
+    end # Ends While
+
+  end  # Ends for
 
   return content
 
