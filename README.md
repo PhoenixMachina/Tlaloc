@@ -28,10 +28,9 @@ viewPath=pathWithYourViews
 templatePath=pathWithYourTemplates
 resourcePath=pathWithYourResources
 ```
-By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder. You can call them with addResource keyword in your view file :
+By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder. You can call them with addResource keyword in your view file (not available yet):
 ```
 {addResource "/pathToResourceFolder/css/main.css"}
-{addResource "http://example.com/resources/css/main.css"}
 ```
 
 You now need to create a "Page" object. The constructor has three parameters, a tlaloc object, a string with the name of the view and a dictionnary with variables you want to add in the view.
