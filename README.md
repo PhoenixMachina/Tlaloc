@@ -28,7 +28,7 @@ viewPath=pathWithYourViews
 templatePath=pathWithYourTemplates
 resourcePath=pathWithYourResources
 ```
-By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder. You can call them with addResource keyword in your view file (not available yet):
+By resources, we mean like css, javascript, all that stuff. Doesn't matter if they're in a subfolder. You can call them with addResource keyword in your view file:
 ```
 addResource("css/main.css")
 ```
