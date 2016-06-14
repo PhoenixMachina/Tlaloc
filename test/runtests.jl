@@ -1,3 +1,4 @@
+include("../src/Tlaloc.jl")
 using Base.Test
 using Tlaloc
 
@@ -6,7 +7,7 @@ engine = TlalocEngine(string(dirname(Base.source_path()),"/test_conf.ini"))
 @test typeof(engine) == TlalocEngine
 @test engine.viewPath == "thisIsTheViewPath/"
 @test engine.templatePath == "thisIsTheTemplatePath/"
-@test engine.resourcePath == "thisIsTheResource/"
+#@test engine.resourcePath == "thisIsTheResource/"
 
 #Testing Page constructor
 aPage = Page(engine,"apage.html",Dict())

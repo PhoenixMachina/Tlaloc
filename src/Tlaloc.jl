@@ -6,6 +6,8 @@ export TlalocEngine, Page,render,addArg
 
 keywords = ["extends","for","endfor","addResource"] #Not all implemented yet
 
+format = ""
+
 #Type Tlaloc
 type TlalocEngine
   viewPath::ASCIIString # path to views
@@ -20,13 +22,13 @@ type TlalocEngine
       templatePath = retrieve(conf, "default", "templatePath")
       resourcePath = retrieve(conf, "default", "resourcePath")
 
-      if((viewPath[end-1:end] != "/") && (viewPath[end-1:end] != "\\"))
+      if((viewPath[end] != "/") && (viewPath[end-1:end] != "\\"))
         viewPath = string(viewPath,"/")
       end
-      if((templatePath[end-1:end] != "/") && (templatePath[end-1:end] != "\\"))
+      if((templatePath[end] != "/") && (templatePath[end-1:end] != "\\"))
         templatePath = string(templatePath,"/")
       end
-      if((resourcePath[end-1:end] != "/") && (resourcePath[end-1:end] != "\\"))
+      if((resourcePath[end] != "/") && (resourcePath[end-1:end] != "\\"))
         resourcePath = string(resourcePath,"/")
       end
 
@@ -60,8 +62,10 @@ end
 
 function recursiveKeywordProcessing(content,page)
 
-  while ismatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) # Searching for every match ${something} in the content
-    amatch = match(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) #Giving it a value
+  while ismatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) || ismatch(r"[a-zA-Z0-9 .!]+\(\".*\"\)",content) # Searching for every match ${something} in the content
+
+    amatch =  ismatch(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) ? match(r"\$\{([a-zA-Z0-9_ .\"]+)\}",content) :
+              match(r"[a-zA-Z0-9 .!]+\(\".*\"\)",content)
 
     hasKeyword = false # No keywords are here at first, we'll need that later on to check if there's neither a keyword nor a variable, which means nothing good, in the match
 
@@ -84,21 +88,45 @@ function recursiveKeywordProcessing(content,page)
 
           # Fetching the template and adding it to the content
           tmpContent = recursiveKeywordProcessing(open(readall,page.tlaloc.templatePath * (statement.match)[2:end-1]),page)
+
           content = string(content[1:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(amatch.match))):end] )
+
+        elseif keyword == "for" && ismatch(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content) && ismatch(r"\${forend}",content) # If it's a for loop with the appropriate form
+          hasKeyword = true
+
+          beginning = match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content)
+          beginIndex = beginning.offset+length(beginning.match)
+          ending = match(r"\${forend}",content)
+          endIndex = ending.offset - 1
+
+          content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
+
+        elseif keyword == "addResource" && (ismatch(r"addResource\(\"((.*\/)?(?:(.+?)(?:(\.[^.]*[a-zA-Z0-9]))))\"\)",amatch.match) || contains(content, r"addResource\(\"((.*\/)?(?:(.+?)(?:(\.[^.]*[a-zA-Z0-9]))))\"\)")) # Checking if there's an addResource keyword with the appropriate form
+          hasKeyword = true
+          statement = match(r"addResource\(\"((.*\/)?(?:(.+?)(?:(\.[^.]*[a-zA-Z0-9]))))\"\)",amatch.match)
+
+          # Checking if the file exists
+          if !isfile(page.tlaloc.resourcePath * statement[1])
+            throw(ArgumentError("The file you are trying to add does not exist"))
+          end
+
+          # Fetching the resource file
+          tmpContent = page.tlaloc.resourcePath * statement[1]
+
+          if statement[4] == ".css"
+            tmpContent = string("<link rel=\"stylesheet\" type=\"text/css\" href=\"",tmpContent,"\" media=\"screen\">")
+          elseif statement[4] == ".js"
+            tmpContent = string("<script type=\"text/javascript\" src=\"",tmpContent,"\"></script>")
+          else
+            throw(ArgumentError("Unknown format"))
+          end
+
+          content = string(content[1:(amatch.offset)-1],tmpContent,content[((amatch.offset)+(length(statement.match))):end])
         end
 
-      elseif keyword == "for" && ismatch(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content) && ismatch(r"\${forend}",content) # If it's a for loop with the appropriate form
-        hasKeyword = true
-
-        beginning = match(r"\${for ([a-zA-Z0-9_. ]+) in ([a-zA-Z0-9_. ]+)}",content)
-        beginIndex = beginning.offset+length(beginning.match)
-        ending = match(r"\${forend}",content)
-        endIndex = ending.offset - 1
-
-        content = string(content[1:beginning.offset],recursiveKeywordProcessing(content[beginIndex:endIndex],page),content[endIndex+2:end])
       end
 
-    end
+    end #Ends for
 
     if haskey(page.args,(amatch.match)[3:end-1]) #If it's a argument passed down by the controller, add it
       var = (page.args)[(amatch.match)[3:end-1]]
@@ -107,8 +135,7 @@ function recursiveKeywordProcessing(content,page)
       content = string(content[1:(amatch.offset)-1 ],"",content[((amatch.offset)+(length(amatch.match))):end] )
     end
 
-
-  end # Ends While
+    end #Ends While
 
   return content
 
