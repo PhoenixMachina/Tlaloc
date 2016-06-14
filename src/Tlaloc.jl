@@ -47,7 +47,7 @@ type Page
 end
 
 # Adds arguments to page
-function addArg(page::Page, name::ASCIIString, value::ASCIIString)
+function addArg(page::Page, name::ASCIIString, value::UTF8String)
   push!(page.args,(name=>value))
 end
 
